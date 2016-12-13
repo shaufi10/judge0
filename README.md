@@ -1,43 +1,36 @@
-# judge0
-[![Code Climate](https://codeclimate.com/github/hermanzdosilovic/judge0/badges/gpa.svg)](https://codeclimate.com/github/hermanzdosilovic/judge0) [![Test Coverage](https://codeclimate.com/github/hermanzdosilovic/judge0/badges/coverage.svg)](https://codeclimate.com/github/hermanzdosilovic/judge0/coverage) [![Build Status](https://travis-ci.org/hermanzdosilovic/judge0.svg?branch=master)](https://travis-ci.org/hermanzdosilovic/judge0) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/hermanzdosilovic/judge0/blob/master/LICENSE)
+# judge0-demo
 
-Judge0 is an open source online judge API for code compilation and execution on given test data. It provides extensive documentation for developing, configuring and hosting your own instance with ease. Currently supports 16 compilers and interpreters, and more of them can be added easly. It's powered by [Rails](http://rubyonrails.org/), you can use [Docker](https://www.docker.com/) in both development and production environment, and every untrusted code you run is sandboxed using [isolate](https://github.com/ioi/isolate).
+judge0-demo is a static web page which is used for [www.judge0.com](http://www.judge0.com).
 
-## Content
+It can be used for development because it provides simple interface for interacting with API.
 
-1. [Project Organization](#project-organization)
-2. [Project Goals](#project-goals)
-3. [Future Plans](#future-plans)
-3. [Host Your judge0](#host-your-judge0)
-4. [Contributing](#contributing)
+## Development
 
-## Project Organization
+If you are using judge0-demo for development then you need to change [`BASE_URL`](https://github.com/hermanzdosilovic/judge0/blob/master/demo/js/demo.js#L1) variable in [js/demo.js](https://github.com/hermanzdosilovic/judge0/blob/master/demo/js/demo.js). Following proposed [development workflow](https://github.com/hermanzdosilovic/judge0/tree/master/api#development-workflow) it should be set to `http://localhost:3000`.
 
-Project is organized in three major components:
+## Production
 
-* [judge0-base](https://github.com/hermanzdosilovic/judge0/tree/master/base)
-* [judge0-api](https://github.com/hermanzdosilovic/judge0/tree/master/api)
-* [judge0-demo](https://github.com/hermanzdosilovic/judge0/tree/master/demo)
+You can host your own version of this demo page if you want.
 
-[judge0-base](https://github.com/hermanzdosilovic/judge0/tree/master/base) represents base Docker image on which judge0-api will be build. It installs different compilers, interpreters and sandbox environment which are necessary for judge0-api.
+Be sure to change [`BASE_URL`](https://github.com/hermanzdosilovic/judge0/blob/master/demo/js/demo.js#L1) variable in [js/demo.js](https://github.com/hermanzdosilovic/judge0/blob/master/demo/js/demo.js). It needs to point to your production API endpoint, and you **cannot** use [api.judge0.com](http://api.judge0.com/). You can also add Google Analytics tracking code in [index.html](https://github.com/hermanzdosilovic/judge0/blob/master/demo/index.html#L137).
 
-[judge0-api](https://github.com/hermanzdosilovic/judge0/tree/master/api) is core logic of judge0 which accepts requests, creates background jobs and runs untrusted programs in sandboxed environment.
+Because this is simple static web page you can host it in number of ways.
 
-[judge0-demo](https://github.com/hermanzdosilovic/judge0/tree/master/demo) represents static demo web page located at [www.judge0.com](http://www.judge0.com). It is irrelevant if you want to host your own judge0, but it is useful when developing judge0 because it provides simple interface for running untrusted code.
+For example, [www.judge0.com](http://www.judge0.com) is hosted on [AWS S3](https://aws.amazon.com/s3), checkout these tutorials:
+* [Hosting a Static Website on Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html)
+* [Setting Up a Static Website Using a Custom Domain](https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html)
 
-## Project Goals
+But, of course, you can also use Docker:
 
-My goal is to create configurable, robust, easy to use and fully documented online judge API service which can be used and hosted by anyone for free, and I was motivated to start this project when I saw [Sphere Engine](https://sphere-engine.com).
+1. Copy [demo](https://github.com/hermanzdosilovic/judge0/tree/master/demo) folder to your server.
+2. In [nginx.conf](https://github.com/hermanzdosilovic/judge0/blob/master/demo/nginx.conf) change [`server_name`](https://github.com/hermanzdosilovic/judge0/blob/master/demo/nginx.conf#L3).
+3. Build Docker image:
+```
+$ docker build -t <your name>/judge0-base .
+```
+4. Run container:
+```
+$ docker run -p 80:80 -d <your name>/judge0-base
+```
 
-In the future I would like to build full online judge service which will enable anybody to host their own competition, or it can be used by schools and universities for educational purposes, e.q. writing exams or solving programming exercises.
-
-## Host Your judge0
-
-Hosting your judge0 is easy thanks to [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/). Minimal setup for hosting your judge0 is described here [here](https://github.com/hermanzdosilovic/judge0/tree/master/api#production)
-
-## Contributing
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+You could also build your Docker image on your local machine, push it to Docker Hub, pull it on your server and run new container.
